@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateAccountDto } from './dto/create-account.dto';
 import { Account } from './interfaces/account.interface';
 
@@ -12,12 +12,25 @@ export class AccountsService {
   }
 
   create(createAccountDto: CreateAccountDto) {
-    this.idCounter++;
-    const newAccount: Account = {
-      id: this.idCounter.toString(),
-      ...createAccountDto,
-    };
-    this.accounts.push(newAccount);
-    return newAccount;
+    const isAccountRegistred = this.accounts.some(
+      (registredAccount) =>
+        registredAccount.document === createAccountDto.document,
+    );
+
+    if (!isAccountRegistred) {
+      this.idCounter++;
+      const newAccount: Account = {
+        id: this.idCounter.toString(),
+        ...createAccountDto,
+      };
+      this.accounts.push(newAccount);
+      console.log(this.accounts);
+      return newAccount;
+    } else {
+      console.log(this.accounts);
+      throw new BadRequestException(
+        'Document already registred. Unable to create new account',
+      );
+    }
   }
 }

@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { Account, AccountResponse } from './interfaces/account.interface';
+import { CreateAccountDto } from './dto/create-account.dto';
+import { Account } from './interfaces/account.interface';
 
 @Injectable()
 export class AccountsService {
@@ -10,11 +11,11 @@ export class AccountsService {
     return 'Olá! Bem vindes ao Banco Digital';
   }
 
-  create(account: Account) {
+  create(createAccountDto: CreateAccountDto) {
     this.idCounter++;
-    const newAccount: AccountResponse = {
+    const newAccount: Account = {
       id: this.idCounter.toString(),
-      ...account,
+      ...createAccountDto,
     };
     this.accounts.push(newAccount);
     return newAccount;

@@ -17,7 +17,10 @@ export class AccountsController {
   }
 
   @Post('create-account')
-  async create(@Body(new ValidationPipe()) createAccountDto: CreateAccountDto) {
+  async create(
+    @Body(new ValidationPipe())
+    createAccountDto: CreateAccountDto,
+  ) {
     return this.accountsService.create(createAccountDto);
   }
 }

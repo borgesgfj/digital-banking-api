@@ -3,8 +3,8 @@ import { AccountsController } from './accounts.controller';
 import { AccountsService } from './accounts.service';
 
 @Module({
-  imports: [],
   controllers: [AccountsController],
   providers: [AccountsService],
+  exports: [AccountsService],
 })
-export class AppModule {}
+export class AccountsModule {}

@@ -1,10 +1,7 @@
-// Método POST para adicionar conta;
-// Método Get para obter contas cadastradas (não pedido)
-// Método .... para realizar transferêcnia.
-
 import { Body, Controller, Get, Post } from '@nestjs/common';
 import { AccountsService } from './accounts.service';
 import { CreateAccountDto } from './dto/create-account.dto';
+import { Account } from './interfaces/account.interface';
 import { ValidationPipe } from './validation.pipe';
 
 @Controller()
@@ -21,6 +18,6 @@ export class AccountsController {
     @Body(new ValidationPipe())
     createAccountDto: CreateAccountDto,
   ) {
-    return this.accountsService.create(createAccountDto);
+    return this.accountsService.create(<Account>{ ...createAccountDto });
   }
 }

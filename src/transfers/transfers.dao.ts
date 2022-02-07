@@ -15,7 +15,6 @@ export class TransfersDao {
       id: this.idTransfer.toString(),
       ...transferSave,
     });
-    console.log(this.transfersHistory);
   }
 
   filterTranferHistoryBy(filterCb: FilterCallback): AccountTransfer[] {

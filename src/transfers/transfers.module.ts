@@ -4,7 +4,7 @@ import { TrasnfersService } from './transfers.service';
 import { TransfersController } from './transfers.controller';
 import { AccountsTransfersDao } from './accounts-transfers.dao';
 import { TransfersDao } from './transfers.dao';
-import { ValidatorValue } from './validator-value';
+import { TransfersValidations } from './transfers-validation';
 import { HandleRequestTime } from './transfer-date';
 
 @Module({
@@ -14,7 +14,7 @@ import { HandleRequestTime } from './transfer-date';
     TrasnfersService,
     AccountsTransfersDao,
     TransfersDao,
-    ValidatorValue,
+    TransfersValidations,
     HandleRequestTime,
   ],
 })

@@ -17,5 +17,6 @@ import { HandleRequestTime } from './transfer-date';
     TransfersValidations,
     HandleRequestTime,
   ],
+  exports: [TransfersDao],
 })
 export class TransfersModule {}

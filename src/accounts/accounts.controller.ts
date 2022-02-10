@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Post } from '@nestjs/common';
 import { AccountsService } from './accounts.service';
 import { CreateAccountDto } from './dto/create-account.dto';
-import { Account } from './interfaces/account.interface';
+import { Accounts } from './entities/account.entity';
 import { ValidationPipe } from './validation.pipe';
 
 @Controller()
@@ -18,6 +18,6 @@ export class AccountsController {
     @Body(new ValidationPipe())
     createAccountDto: CreateAccountDto,
   ) {
-    return this.accountsService.create(<Account>{ ...createAccountDto });
+    return this.accountsService.create(<Accounts>{ ...createAccountDto });
   }
 }

@@ -3,7 +3,8 @@ import { AccountsService } from 'src/accounts/accounts.service';
 import { TransferOperationDto } from './dto/transfers.dto';
 import { AccountsTransfersDao } from './accounts-transfers.dao';
 import { TransfersValidations } from './transfers-validation';
-import { HandleRequestTime } from './transfer-date';
+import { HandleTime } from '../utils/handle-date';
+import { TransfersDao } from './transfers.dao';
 
 const TRANSFER_TIMEOUT = 2 * 60 * 1000; // 2MIN
 
@@ -11,22 +12,23 @@ const TRANSFER_TIMEOUT = 2 * 60 * 1000; // 2MIN
 export class TrasnfersService {
   constructor(
     private readonly accountsService: AccountsService,
-    private readonly transfersDao: AccountsTransfersDao,
+    private readonly accountsTransfersDao: AccountsTransfersDao,
+    private readonly transfersDao: TransfersDao,
     private readonly transfersValidations: TransfersValidations,
   ) {}
-  transfer(transferOperationDto: TransferOperationDto) {
+  async transfer(transferOperationDto: TransferOperationDto) {
     const senderAcc = {
-      ...this.accountsService.getByDocumentOrDie(
+      ...(await this.accountsService.getByDocumentOrDie(
         transferOperationDto.senderDocument,
-      ),
+      )),
     };
 
     const receiverAcc = {
-      ...this.accountsService.getByDocumentOrDie(
+      ...(await this.accountsService.getByDocumentOrDie(
         transferOperationDto.receiverDocument,
-      ),
+      )),
     };
-    const timeStamp = HandleRequestTime.timeStamp();
+    const currentTimeStamp = HandleTime.timeStamp();
 
     const transferValue = transferOperationDto.value;
 
@@ -35,11 +37,11 @@ export class TrasnfersService {
       transferValue,
     );
 
-    this.transfersValidations.validateDuplicatedTransfer(
-      senderAcc,
-      receiverAcc,
+    await this.transfersValidations.validateDuplicatedTransfer(
+      senderAcc.document,
+      receiverAcc.document,
       transferValue,
-      timeStamp,
+      currentTimeStamp,
       TRANSFER_TIMEOUT,
     );
 
@@ -47,11 +49,11 @@ export class TrasnfersService {
 
     receiverAcc.availableValue = receiverAcc.availableValue + transferValue;
 
-    return this.transfersDao.executeTransfer(
+    return this.accountsTransfersDao.executeTransfer(
       senderAcc,
       receiverAcc,
       transferValue,
-      timeStamp,
+      currentTimeStamp,
     );
   }
 }

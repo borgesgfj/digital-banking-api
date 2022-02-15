@@ -15,32 +15,19 @@ export class AccountsDao {
 
   private idCounter = 0;
 
-  getByDocument(document: string): Account {
-    return this.accounts.find(
-      (registredAccount) => registredAccount.document === document,
-    );
-  }
-
-  async findByDocument(doc: string): Promise<Accounts> {
+  async getByDocument(doc: string): Promise<Accounts> {
     const acc = await this.accountsRepository.findOne({ document: doc });
     return acc;
   }
 
-  save(account: Accounts): Promise<Accounts> {
-    this.accountsRepository.save(account);
-    const newAccount = this.findByDocument(account.document);
+  async save(account: Accounts): Promise<Accounts> {
+    await this.accountsRepository.save(account);
+    const newAccount = await this.getByDocument(account.document);
     return newAccount;
   }
-  // TODO (GILBERTO): Usar um findIndex ou indexOf
-  updateValue(document: string, updatedValue: number) {
-    this.accounts.forEach((registredAcc, index) => {
-      if (registredAcc.document === document) {
-        return (this.accounts[index] = {
-          ...registredAcc,
-          availableValue: updatedValue,
-        });
-      }
-      return registredAcc;
+  async updateValue(accId: number, updatedValue: number) {
+    await this.accountsRepository.update(accId, {
+      availableValue: updatedValue,
     });
   }
 }

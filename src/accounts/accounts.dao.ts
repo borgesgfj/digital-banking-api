@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Accounts } from './entities/account.entity';
-import { Account } from './interfaces/account.interface';
 
 @Injectable()
 export class AccountsDao {
@@ -10,10 +9,6 @@ export class AccountsDao {
     @InjectRepository(Accounts)
     private accountsRepository: Repository<Accounts>,
   ) {}
-
-  private readonly accounts: Account[] = [];
-
-  private idCounter = 0;
 
   async getByDocument(doc: string): Promise<Accounts> {
     const acc = await this.accountsRepository.findOne({ document: doc });

@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { TransfersEntity } from './entities/transfers.entity';
-import { AccountTransfer } from './interfaces/transfer-save.interface';
 
 @Injectable()
 export class TransfersDao {
@@ -10,9 +9,6 @@ export class TransfersDao {
     @InjectRepository(TransfersEntity)
     private transfersRepository: Repository<TransfersEntity>,
   ) {}
-
-  private readonly transfersHistory: AccountTransfer[] = [];
-  private idTransfer = 0;
 
   async save(transferSave: TransfersEntity) {
     await this.transfersRepository.save(transferSave);
@@ -34,13 +30,9 @@ export class TransfersDao {
     return similarTransfers;
   }
 
-  filterTranferHistoryBy(filterCb: FilterCallback): AccountTransfer[] {
-    return this.transfersHistory.filter(filterCb);
+  async getTransactionsHistory(document: string): Promise<TransfersEntity[]> {
+    return await this.transfersRepository.find({
+      where: [{ receiverDocument: document }, { senderDocument: document }],
+    });
   }
 }
-
-type FilterCallback = (
-  value: AccountTransfer,
-  index?: number,
-  array?: AccountTransfer[],
-) => boolean;

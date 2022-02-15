@@ -8,12 +8,8 @@ export class HistoryService {
     private readonly accountsService: AccountsService,
     private readonly transfersDao: TransfersDao,
   ) {}
-  getHistory(document: string) {
-    this.accountsService.getByDocumentOrDie(document);
-    return this.transfersDao.filterTranferHistoryBy(
-      (transfers) =>
-        transfers.senderDocument === document ||
-        transfers.receiverDocument === document,
-    );
+  async getHistory(document: string) {
+    await this.accountsService.getByDocumentOrDie(document);
+    return await this.transfersDao.getTransactionsHistory(document);
   }
 }

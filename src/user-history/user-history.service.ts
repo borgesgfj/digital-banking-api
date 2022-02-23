@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { AccountsService } from 'src/accounts/accounts.service';
-import { TransfersDao } from 'src/transfers/transfers.dao';
+import { AccountsService } from '../accounts/accounts.service';
+import { TransfersDao } from '../transfers/transfers.dao';
 
 @Injectable()
 export class HistoryService {

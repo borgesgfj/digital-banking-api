@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { AccountsDao } from 'src/accounts/accounts.dao';
-import { Accounts } from 'src/accounts/entities/account.entity';
+import { AccountsDao } from '../accounts/accounts.dao';
+import { Accounts } from '../accounts/entities/account.entity';
 import { TransfersEntity } from './entities/transfers.entity';
 import { TransferLog } from './interfaces/transfer-log.interface';
 import { TransfersDao } from './transfers.dao';

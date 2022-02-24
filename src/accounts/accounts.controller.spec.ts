@@ -1,13 +1,13 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { AccountsController } from './accounts.controller';
-import { AccountsService } from './accounts.service';
+import { AccountsServiceImpl } from './accounts.service.impl';
 import { AccountsBuilder } from '../utils/builders/accounts-builder';
 import { Accounts } from './entities/account.entity';
 import { CreateAccountDto } from './dto/create-account.dto';
 
 describe('AccountsController', () => {
   let accountsController: AccountsController;
-  let accountsServiceMock: DeepMocked<AccountsService>;
+  let accountsServiceMock: DeepMocked<AccountsServiceImpl>;
 
   const account: Accounts = AccountsBuilder.buildAccounts(
     'MARIE CURIE',
@@ -21,7 +21,7 @@ describe('AccountsController', () => {
   );
 
   beforeEach(() => {
-    accountsServiceMock = createMock<AccountsService>();
+    accountsServiceMock = createMock<AccountsServiceImpl>();
     accountsController = new AccountsController(accountsServiceMock);
   });
 

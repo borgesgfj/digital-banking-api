@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { AccountsBuilder } from '../utils/builders/accounts-builder';
 import { Repository } from 'typeorm';
-import { AccountsDao } from './accounts.dao';
+import { AccountsDao } from './accounts.dao.impl';
 import { Accounts } from './entities/account.entity';
 
 describe('AccountsDao', () => {

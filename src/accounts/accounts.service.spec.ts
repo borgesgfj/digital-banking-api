@@ -1,13 +1,13 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { AccountsDao } from './accounts.dao';
-import { AccountsService } from './accounts.service';
+import { AccountsDao } from './accounts.dao.impl';
+import { AccountsServiceImpl } from './accounts.service.impl';
 import { Accounts } from './entities/account.entity';
 import { AccountsBuilder } from '../utils/builders/accounts-builder';
 import { CreateAccountDto } from './dto/create-account.dto';
 import { BadRequestException } from '@nestjs/common';
 
 describe('AccountsService', () => {
-  let accountsService: AccountsService;
+  let accountsService: AccountsServiceImpl;
   let accountsDaoMock: DeepMocked<AccountsDao>;
   const account: Accounts = AccountsBuilder.buildAccounts(
     'MARIE CURIE',
@@ -21,7 +21,7 @@ describe('AccountsService', () => {
 
   beforeEach(() => {
     accountsDaoMock = createMock<AccountsDao>();
-    accountsService = new AccountsService(accountsDaoMock);
+    accountsService = new AccountsServiceImpl(accountsDaoMock);
   });
 
   describe('create', () => {

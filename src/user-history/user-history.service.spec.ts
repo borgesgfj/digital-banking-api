@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { HandleTime } from '../utils/handle-date';
-import { AccountsService } from '../accounts/accounts.service';
-import { TransfersDao } from '../transfers/transfers.dao';
+import { AccountsServiceImpl } from '../accounts/accounts.service.impl';
+import { TransfersDaoImpl } from '../transfers/transfers.dao.impl';
 import { TransfersEntityBuilder } from '../utils/builders/transfers-entity-builders';
 import { HistoryService } from './user-history.service';
 import { Accounts } from '../accounts/entities/account.entity';
@@ -10,8 +10,8 @@ import { BadRequestException } from '@nestjs/common';
 
 describe('HistoryService', () => {
   let historyService: HistoryService;
-  let accountsServiceMock: DeepMocked<AccountsService>;
-  let transfersDaoMock: DeepMocked<TransfersDao>;
+  let accountsServiceMock: DeepMocked<AccountsServiceImpl>;
+  let transfersDaoMock: DeepMocked<TransfersDaoImpl>;
 
   const transfer = TransfersEntityBuilder.buildTransfers(
     1,
@@ -24,8 +24,8 @@ describe('HistoryService', () => {
   );
 
   beforeEach(() => {
-    accountsServiceMock = createMock<AccountsService>();
-    transfersDaoMock = createMock<TransfersDao>();
+    accountsServiceMock = createMock<AccountsServiceImpl>();
+    transfersDaoMock = createMock<TransfersDaoImpl>();
     historyService = new HistoryService(accountsServiceMock, transfersDaoMock);
   });
 

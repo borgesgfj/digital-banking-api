@@ -1,11 +1,15 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Inject, Post } from '@nestjs/common';
+import { DITokens } from '../common/enums/DITokens';
 import { TransferOperationDto } from './dto/transfers.dto';
-import { TrasnfersService } from './transfers.service';
+import { TrasnfersServiceImpl } from './transfers.service.impl';
 import { TransfersValidationPipe } from './validation.pipe';
 
 @Controller('transfers')
 export class TransfersController {
-  constructor(private readonly transfersService: TrasnfersService) {}
+  constructor(
+    @Inject(DITokens.TrasnfersService)
+    private readonly transfersService: TrasnfersServiceImpl,
+  ) {}
 
   @Post()
   async transfer(

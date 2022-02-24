@@ -1,22 +1,22 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { TransferLogBuilder } from '../utils/builders/transfers-log-builder';
-import { AccountsService } from '../accounts/accounts.service';
+import { AccountsServiceImpl } from '../accounts/accounts.service.impl';
 import { Accounts } from '../accounts/entities/account.entity';
 import { AccountsBuilder } from '../utils/builders/accounts-builder';
-import { AccountsTransfersDao } from './accounts-transfers.dao';
+import { AccountsTransfersDaoImpl } from './accounts-transfers.dao.impl';
 import { TransferLog } from './interfaces/transfer-log.interface';
 import { TransfersValidations } from './transfers-validation';
-import { TrasnfersService } from './transfers.service';
+import { TrasnfersServiceImpl } from './transfers.service.impl';
 import { TransferOperationDto } from './dto/transfers.dto';
 import { TransfersEntityBuilder } from '../utils/builders/transfers-entity-builders';
 import { BadRequestException } from '@nestjs/common';
 
 describe('TransferService', () => {
-  let transfersService: TrasnfersService;
+  let transfersService: TrasnfersServiceImpl;
 
-  let accountsServiceMock: DeepMocked<AccountsService>;
+  let accountsServiceMock: DeepMocked<AccountsServiceImpl>;
 
-  let accountsTransfersDaoMock: DeepMocked<AccountsTransfersDao>;
+  let accountsTransfersDaoMock: DeepMocked<AccountsTransfersDaoImpl>;
 
   let transfersValidationsMock: DeepMocked<TransfersValidations>;
 
@@ -33,11 +33,11 @@ describe('TransferService', () => {
     TransfersEntityBuilder.buildTransfers();
 
   beforeEach(() => {
-    accountsServiceMock = createMock<AccountsService>();
-    accountsTransfersDaoMock = createMock<AccountsTransfersDao>();
+    accountsServiceMock = createMock<AccountsServiceImpl>();
+    accountsTransfersDaoMock = createMock<AccountsTransfersDaoImpl>();
     transfersValidationsMock = createMock<TransfersValidations>();
 
-    transfersService = new TrasnfersService(
+    transfersService = new TrasnfersServiceImpl(
       accountsServiceMock,
       accountsTransfersDaoMock,
       transfersValidationsMock,

@@ -2,17 +2,17 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { TransferLogBuilder } from '../utils/builders/transfers-log-builder';
 import { TransfersEntityBuilder } from '../utils/builders/transfers-entity-builders';
 import { TransfersController } from './transfers.controller';
-import { TrasnfersService } from './transfers.service';
+import { TrasnfersServiceImpl } from './transfers.service.impl';
 
 describe('TransfersController', () => {
   let transfersController: TransfersController;
-  let transfersServiceMock: DeepMocked<TrasnfersService>;
+  let transfersServiceMock: DeepMocked<TrasnfersServiceImpl>;
 
   const transferLog = TransferLogBuilder.buildTransfersLog();
   const transfersDto = TransfersEntityBuilder.buildTransfers();
 
   beforeEach(() => {
-    transfersServiceMock = createMock<TrasnfersService>();
+    transfersServiceMock = createMock<TrasnfersServiceImpl>();
     transfersController = new TransfersController(transfersServiceMock);
   });
 

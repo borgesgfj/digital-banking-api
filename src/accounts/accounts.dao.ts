@@ -1,36 +1,28 @@
 import { Injectable } from '@nestjs/common';
-import { Account } from './interfaces/account.interface';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Accounts } from './entities/account.entity';
 
 @Injectable()
 export class AccountsDao {
-  private readonly accounts: Account[] = [];
-  private idCounter = 0;
+  constructor(
+    @InjectRepository(Accounts)
+    private accountsRepository: Repository<Accounts>,
+  ) {}
 
-  getByDocument(document: string): Account {
-    return this.accounts.find(
-      (registredAccount) => registredAccount.document === document,
-    );
+  async getByDocument(doc: string): Promise<Accounts> {
+    const acc = await this.accountsRepository.findOne({ document: doc });
+    return acc;
   }
 
-  save(account: Account): Account {
-    this.idCounter++;
-    const newAccount: Account = {
-      id: this.idCounter.toString(),
-      ...account,
-    };
-    this.accounts.push(newAccount);
+  async save(account: Accounts): Promise<Accounts> {
+    await this.accountsRepository.save(account);
+    const newAccount = await this.getByDocument(account.document);
     return newAccount;
   }
-  // TODO (GILBERTO): Usar um findIndex ou indexOf
-  updateValue(document: string, updatedValue: number) {
-    this.accounts.forEach((registredAcc, index) => {
-      if (registredAcc.document === document) {
-        return (this.accounts[index] = {
-          ...registredAcc,
-          availableValue: updatedValue,
-        });
-      }
-      return registredAcc;
+  async updateValue(accId: number, updatedValue: number) {
+    await this.accountsRepository.update(accId, {
+      availableValue: updatedValue,
     });
   }
 }

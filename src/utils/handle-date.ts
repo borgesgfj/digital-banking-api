@@ -1,4 +1,4 @@
-export class HandleRequestTime {
+export class HandleTime {
   static timeStamp() {
     return new Date().toISOString().replace(/\.\d{3}/, '');
   }

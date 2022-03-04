@@ -1,6 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { Account } from 'src/accounts/interfaces/account.interface';
-import { HandleRequestTime } from './transfer-date';
+import { HandleTime } from '../utils/handle-date';
 import { TransfersDao } from './transfers.dao';
 
 @Injectable()
@@ -15,27 +14,30 @@ export class TransfersValidations {
     }
   }
 
-  validateDuplicatedTransfer(
-    senderAcc: Account,
-    receiverAcc: Account,
+  async validateDuplicatedTransfer(
+    senderDoc: string,
+    receiverDoc: string,
     transferValue: number,
     timeStamp: string,
     transferTimeOut: number,
   ) {
-    const duplicatedTransfers = this.transfersDao.filterTranferHistoryBy(
+    const similarTransfers = [
+      ...(await this.transfersDao.getSimilarTransfers(
+        senderDoc,
+        receiverDoc,
+        transferValue,
+      )),
+    ];
+
+    const duplicatedTransfers = similarTransfers.filter(
       (transfer) =>
-        transfer.senderDocument === senderAcc.document &&
-        transfer.receiverDocument === receiverAcc.document &&
-        transfer.value === transferValue &&
-        HandleRequestTime.dateDifference(timeStamp, transfer.dateTime) <=
-          transferTimeOut,
+        HandleTime.dateDifference(timeStamp, transfer.dateTime) <=
+        transferTimeOut,
     );
+
     if (duplicatedTransfers.length > 0) {
       const lastTransferTime = duplicatedTransfers[0].dateTime;
-      const deltaTime = HandleRequestTime.dateDifference(
-        timeStamp,
-        lastTransferTime,
-      );
+      const deltaTime = HandleTime.dateDifference(timeStamp, lastTransferTime);
       const awaitTime = (transferTimeOut - deltaTime) / 1000;
       throw new BadRequestException(
         `Duplicated Transfer. Wait ${awaitTime} seconds and try again.`,

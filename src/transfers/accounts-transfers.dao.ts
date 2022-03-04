@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { AccountsDao } from 'src/accounts/accounts.dao';
-import { Account } from 'src/accounts/interfaces/account.interface';
+import { Accounts } from 'src/accounts/entities/account.entity';
+import { TransfersEntity } from './entities/transfers.entity';
 import { TransferLog } from './interfaces/transfer-log.interface';
 import { TransfersDao } from './transfers.dao';
 
@@ -11,21 +12,22 @@ export class AccountsTransfersDao {
     private readonly transfersDao: TransfersDao,
   ) {}
 
-  executeTransfer(
-    senderAcc: Account,
-    receiverAcc: Account,
+  async executeTransfer(
+    senderAcc: Accounts,
+    receiverAcc: Accounts,
     transferValue: number,
     timeStamp: string,
-  ): TransferLog {
-    this.transfersDao.save({
+  ): Promise<TransferLog> {
+    await this.transfersDao.save(<TransfersEntity>{
       senderDocument: senderAcc.document,
       receiverDocument: receiverAcc.document,
       value: transferValue,
       dateTime: timeStamp,
     });
-    this.accountsDao.updateValue(senderAcc.document, senderAcc.availableValue);
-    this.accountsDao.updateValue(
-      receiverAcc.document,
+
+    await this.accountsDao.updateValue(senderAcc.id, senderAcc.availableValue);
+    await this.accountsDao.updateValue(
+      receiverAcc.id,
       receiverAcc.availableValue,
     );
 

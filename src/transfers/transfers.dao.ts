@@ -1,29 +1,38 @@
 import { Injectable } from '@nestjs/common';
-import {
-  TransferSaveInput,
-  AccountTransfer,
-} from './interfaces/transfer-save.interface';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { TransfersEntity } from './entities/transfers.entity';
 
 @Injectable()
 export class TransfersDao {
-  private readonly transfersHistory: AccountTransfer[] = [];
-  private idTransfer = 0;
+  constructor(
+    @InjectRepository(TransfersEntity)
+    private transfersRepository: Repository<TransfersEntity>,
+  ) {}
 
-  save(transferSave: TransferSaveInput) {
-    this.idTransfer++;
-    this.transfersHistory.push({
-      id: this.idTransfer.toString(),
-      ...transferSave,
+  async save(transferSave: TransfersEntity) {
+    await this.transfersRepository.save(transferSave);
+  }
+
+  async getSimilarTransfers(
+    senderDoc: string,
+    receiverDoc: string,
+    transferValue: number,
+  ) {
+    const similarTransfers = await this.transfersRepository.find({
+      where: {
+        senderDocument: senderDoc,
+        receiverDocument: receiverDoc,
+        value: transferValue,
+      },
+    });
+
+    return similarTransfers;
+  }
+
+  async getTransactionsHistory(document: string): Promise<TransfersEntity[]> {
+    return await this.transfersRepository.find({
+      where: [{ receiverDocument: document }, { senderDocument: document }],
     });
   }
-
-  filterTranferHistoryBy(filterCb: FilterCallback): AccountTransfer[] {
-    return this.transfersHistory.filter(filterCb);
-  }
 }
-
-type FilterCallback = (
-  value: AccountTransfer,
-  index?: number,
-  array?: AccountTransfer[],
-) => boolean;

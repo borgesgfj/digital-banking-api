@@ -1,10 +1,14 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
-import { AccountsDao } from './accounts.dao';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import { DITokens } from '../common/enums/DITokens';
 import { Accounts } from './entities/account.entity';
+import { IAccountsDao } from './interfaces/accounts.dao';
+import { IAccountsService } from './interfaces/accounts.service';
 
 @Injectable()
-export class AccountsService {
-  constructor(private readonly accountsDao: AccountsDao) {}
+export class AccountsServiceImpl implements IAccountsService {
+  constructor(
+    @Inject(DITokens.AccountsDao) private readonly accountsDao: IAccountsDao,
+  ) {}
 
   getHello(): string {
     return 'Olá! Bem vindes ao Banco Digital';

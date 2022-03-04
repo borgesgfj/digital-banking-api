@@ -1,12 +1,16 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
-import { AccountsService } from './accounts.service';
+import { Body, Controller, Get, Inject, Post } from '@nestjs/common';
+import { DITokens } from '../common/enums/DITokens';
+import { AccountsServiceImpl } from './accounts.service.impl';
 import { CreateAccountDto } from './dto/create-account.dto';
 import { Accounts } from './entities/account.entity';
 import { ValidationPipe } from './validation.pipe';
 
 @Controller()
 export class AccountsController {
-  constructor(private accountsService: AccountsService) {}
+  constructor(
+    @Inject(DITokens.AccountsService)
+    private accountsService: AccountsServiceImpl,
+  ) {}
 
   @Get()
   getHello(): string {

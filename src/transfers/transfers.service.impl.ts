@@ -1,19 +1,22 @@
-import { Injectable } from '@nestjs/common';
-import { AccountsService } from 'src/accounts/accounts.service';
+import { Inject, Injectable } from '@nestjs/common';
 import { TransferOperationDto } from './dto/transfers.dto';
-import { AccountsTransfersDao } from './accounts-transfers.dao';
 import { TransfersValidations } from './transfers-validation';
 import { HandleTime } from '../utils/handle-date';
-import { TransfersDao } from './transfers.dao';
+import { DITokens } from '../common/enums/DITokens';
+import { TrasnfersService } from './interfaces/transfers.service';
+import { IAccountsTransfersDao } from './interfaces/accounts-transfers.dao';
+import { IAccountsService } from 'src/accounts/interfaces/accounts.service';
 
 const TRANSFER_TIMEOUT = 2 * 60 * 1000; // 2MIN
 
 @Injectable()
-export class TrasnfersService {
+export class TrasnfersServiceImpl implements TrasnfersService {
   constructor(
-    private readonly accountsService: AccountsService,
-    private readonly accountsTransfersDao: AccountsTransfersDao,
-    private readonly transfersDao: TransfersDao,
+    @Inject(DITokens.AccountsService)
+    private readonly accountsService: IAccountsService,
+    @Inject(DITokens.AccountsTransfersDao)
+    private readonly accountsTransfersDao: IAccountsTransfersDao,
+
     private readonly transfersValidations: TransfersValidations,
   ) {}
   async transfer(transferOperationDto: TransferOperationDto) {
@@ -28,6 +31,7 @@ export class TrasnfersService {
         transferOperationDto.receiverDocument,
       )),
     };
+
     const currentTimeStamp = HandleTime.timeStamp();
 
     const transferValue = transferOperationDto.value;
@@ -44,7 +48,6 @@ export class TrasnfersService {
       currentTimeStamp,
       TRANSFER_TIMEOUT,
     );
-
     senderAcc.availableValue = senderAcc.availableValue - transferValue;
 
     receiverAcc.availableValue = receiverAcc.availableValue + transferValue;

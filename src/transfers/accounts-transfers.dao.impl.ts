@@ -1,15 +1,18 @@
-import { Injectable } from '@nestjs/common';
-import { AccountsDao } from 'src/accounts/accounts.dao';
-import { Accounts } from 'src/accounts/entities/account.entity';
+import { Inject, Injectable } from '@nestjs/common';
+import { IAccountsDao } from 'src/accounts/interfaces/accounts.dao';
+import { DITokens } from '../common/enums/DITokens';
+import { Accounts } from '../accounts/entities/account.entity';
 import { TransfersEntity } from './entities/transfers.entity';
+import { IAccountsTransfersDao } from './interfaces/accounts-transfers.dao';
 import { TransferLog } from './interfaces/transfer-log.interface';
-import { TransfersDao } from './transfers.dao';
+import { ITransfersDao } from './interfaces/transfers.dao';
 
 @Injectable()
-export class AccountsTransfersDao {
+export class AccountsTransfersDaoImpl implements IAccountsTransfersDao {
   constructor(
-    private readonly accountsDao: AccountsDao,
-    private readonly transfersDao: TransfersDao,
+    @Inject(DITokens.AccountsDao) private readonly accountsDao: IAccountsDao,
+    @Inject(DITokens.TransfersDao)
+    private readonly transfersDao: ITransfersDao,
   ) {}
 
   async executeTransfer(

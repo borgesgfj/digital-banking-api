@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { AccountsModule } from 'src/accounts/accounts.module';
+import { AccountsModule } from '../accounts/accounts.module';
 import { TrasnfersServiceImpl } from './transfers.service.impl';
 import { TransfersController } from './transfers.controller';
 import { AccountsTransfersDaoImpl } from './accounts-transfers.dao.impl';

@@ -1,11 +1,11 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { AccountsBuilder } from '../utils/builders/accounts-builder';
 import { Repository } from 'typeorm';
-import { AccountsDao } from './accounts.dao.impl';
+import { AccountsDaoImpl } from './accounts.dao.impl';
 import { Accounts } from './entities/account.entity';
 
 describe('AccountsDao', () => {
-  let accountsDao: AccountsDao;
+  let accountsDao: AccountsDaoImpl;
   let accountsRepositoryMock: DeepMocked<Repository<Accounts>>;
 
   const account: Accounts = AccountsBuilder.buildAccounts(
@@ -16,7 +16,7 @@ describe('AccountsDao', () => {
 
   beforeEach(() => {
     accountsRepositoryMock = createMock<Repository<Accounts>>();
-    accountsDao = new AccountsDao(accountsRepositoryMock);
+    accountsDao = new AccountsDaoImpl(accountsRepositoryMock);
   });
 
   describe('getByDocument', () => {

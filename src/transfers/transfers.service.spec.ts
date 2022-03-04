@@ -44,7 +44,6 @@ describe('TransferService', () => {
     );
   });
 
-  // succesful case
   describe('transfer', () => {
     it('should perform a transfer succesfully', async () => {
       accountsServiceMock.getByDocumentOrDie.mockResolvedValue(account);
@@ -100,8 +99,6 @@ describe('TransferService', () => {
         transferLog.dateTime,
       );
     });
-
-    // expected operation error
 
     it('should throw a BadRequestException if sender or receiver documents are not registred', async () => {
       accountsServiceMock.getByDocumentOrDie.mockRejectedValueOnce(
@@ -170,8 +167,6 @@ describe('TransferService', () => {
         account.document,
       );
     });
-
-    // unexpected dependency error
 
     it('should fail if getByDocumentOrDie throws exception', async () => {
       accountsServiceMock.getByDocumentOrDie.mockRejectedValueOnce(new Error());

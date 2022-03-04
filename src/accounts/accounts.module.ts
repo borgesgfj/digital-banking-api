@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { DITokens } from 'src/common/enums/DITokens';
+import { DITokens } from '../common/enums/DITokens';
 import { AccountsController } from './accounts.controller';
-import { AccountsDao } from './accounts.dao.impl';
+import { AccountsDaoImpl } from './accounts.dao.impl';
 import { AccountsServiceImpl } from './accounts.service.impl';
 import { Accounts } from './entities/account.entity';
 
@@ -11,11 +11,11 @@ import { Accounts } from './entities/account.entity';
   controllers: [AccountsController],
   providers: [
     { provide: DITokens.AccountsService, useClass: AccountsServiceImpl },
-    { provide: DITokens.AccountsDao, useClass: AccountsDao },
+    { provide: DITokens.AccountsDao, useClass: AccountsDaoImpl },
   ],
   exports: [
     { provide: DITokens.AccountsService, useClass: AccountsServiceImpl },
-    { provide: DITokens.AccountsDao, useClass: AccountsDao },
+    { provide: DITokens.AccountsDao, useClass: AccountsDaoImpl },
   ],
 })
 export class AccountsModule {}

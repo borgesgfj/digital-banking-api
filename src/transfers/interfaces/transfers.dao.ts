@@ -1,6 +1,6 @@
 import { TransfersEntity } from '../entities/transfers.entity';
 
-export interface TransfersDao {
+export interface ITransfersDao {
   save(transferSave: TransfersEntity): Promise<void>;
 
   getSimilarTransfers(

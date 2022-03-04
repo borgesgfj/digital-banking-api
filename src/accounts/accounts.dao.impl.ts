@@ -5,7 +5,7 @@ import { Accounts } from './entities/account.entity';
 import { IAccountsDao } from './interfaces/accounts.dao';
 
 @Injectable()
-export class AccountsDao implements IAccountsDao {
+export class AccountsDaoImpl implements IAccountsDao {
   constructor(
     @InjectRepository(Accounts)
     private accountsRepository: Repository<Accounts>,

@@ -48,7 +48,6 @@ describe('HistoryService', () => {
       );
     });
 
-    // expected operation error
     it('should throw a BadRequestException if document is not registred', async () => {
       accountsServiceMock.getByDocumentOrDie.mockRejectedValueOnce(
         new BadRequestException(
@@ -68,7 +67,6 @@ describe('HistoryService', () => {
       );
     });
 
-    // unexpected dependency error
     it('should fail if getByDocumentOrDie throws error', async () => {
       accountsServiceMock.getByDocumentOrDie.mockRejectedValueOnce(new Error());
 

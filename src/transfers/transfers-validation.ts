@@ -1,13 +1,13 @@
 import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { DITokens } from '../common/enums/DITokens';
 import { HandleTime } from '../utils/handle-date';
-import { TransfersDaoImpl } from './transfers.dao.impl';
+import { ITransfersDao } from './interfaces/transfers.dao';
 
 @Injectable()
 export class TransfersValidations {
   constructor(
     @Inject(DITokens.TransfersDao)
-    private readonly transfersDao: TransfersDaoImpl,
+    private readonly transfersDao: ITransfersDao,
   ) {}
 
   validateValue(availableValue: number, transferValue: number) {

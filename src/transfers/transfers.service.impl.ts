@@ -1,11 +1,11 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { AccountsServiceImpl } from '../accounts/accounts.service.impl';
 import { TransferOperationDto } from './dto/transfers.dto';
-import { AccountsTransfersDaoImpl } from './accounts-transfers.dao.impl';
 import { TransfersValidations } from './transfers-validation';
 import { HandleTime } from '../utils/handle-date';
 import { DITokens } from '../common/enums/DITokens';
 import { TrasnfersService } from './interfaces/transfers.service';
+import { IAccountsTransfersDao } from './interfaces/accounts-transfers.dao';
+import { IAccountsService } from 'src/accounts/interfaces/accounts.service';
 
 const TRANSFER_TIMEOUT = 2 * 60 * 1000; // 2MIN
 
@@ -13,9 +13,9 @@ const TRANSFER_TIMEOUT = 2 * 60 * 1000; // 2MIN
 export class TrasnfersServiceImpl implements TrasnfersService {
   constructor(
     @Inject(DITokens.AccountsService)
-    private readonly accountsService: AccountsServiceImpl,
+    private readonly accountsService: IAccountsService,
     @Inject(DITokens.AccountsTransfersDao)
-    private readonly accountsTransfersDao: AccountsTransfersDaoImpl,
+    private readonly accountsTransfersDao: IAccountsTransfersDao,
 
     private readonly transfersValidations: TransfersValidations,
   ) {}

@@ -1,13 +1,13 @@
 import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { DITokens } from '../common/enums/DITokens';
-import { AccountsDao } from './accounts.dao.impl';
 import { Accounts } from './entities/account.entity';
+import { IAccountsDao } from './interfaces/accounts.dao';
 import { IAccountsService } from './interfaces/accounts.service';
 
 @Injectable()
 export class AccountsServiceImpl implements IAccountsService {
   constructor(
-    @Inject(DITokens.AccountsDao) private readonly accountsDao: AccountsDao,
+    @Inject(DITokens.AccountsDao) private readonly accountsDao: IAccountsDao,
   ) {}
 
   getHello(): string {

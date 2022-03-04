@@ -1,22 +1,22 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { TransferLogBuilder } from '../utils/builders/transfers-log-builder';
-import { AccountsServiceImpl } from '../accounts/accounts.service.impl';
-import { Accounts } from '../accounts/entities/account.entity';
-import { AccountsBuilder } from '../utils/builders/accounts-builder';
-import { AccountsTransfersDaoImpl } from './accounts-transfers.dao.impl';
-import { TransferLog } from './interfaces/transfer-log.interface';
-import { TransfersValidations } from './transfers-validation';
-import { TrasnfersServiceImpl } from './transfers.service.impl';
-import { TransferOperationDto } from './dto/transfers.dto';
-import { TransfersEntityBuilder } from '../utils/builders/transfers-entity-builders';
+import { Accounts } from '../../accounts/entities/account.entity';
+import { AccountsBuilder } from '../../utils/builders/accounts-builder';
+import { GetAccountsService } from '../../accounts/service/interfaces/get-accounts.service';
+import { IAccountsTransfersDao } from '../dao/interfaces/accounts-transfers.dao';
+import { TransfersValidations } from '../service/interfaces/transfers-validations.service';
+import { TransferLog } from '../interfaces/transfer-log.interface';
+import { TransferLogBuilder } from '../../utils/builders/transfers-log-builder';
+import { TransferOperationDto } from '../dto/transfers.dto';
+import { TransfersEntityBuilder } from '../../utils/builders/transfers-entity-builders';
 import { BadRequestException } from '@nestjs/common';
+import { TrasnfersServiceImpl } from './transfers.service.impl';
 
 describe('TransferService', () => {
   let transfersService: TrasnfersServiceImpl;
 
-  let accountsServiceMock: DeepMocked<AccountsServiceImpl>;
+  let getAccountsServiceMock: DeepMocked<GetAccountsService>;
 
-  let accountsTransfersDaoMock: DeepMocked<AccountsTransfersDaoImpl>;
+  let accountsTransfersDaoMock: DeepMocked<IAccountsTransfersDao>;
 
   let transfersValidationsMock: DeepMocked<TransfersValidations>;
 
@@ -33,12 +33,12 @@ describe('TransferService', () => {
     TransfersEntityBuilder.buildTransfers();
 
   beforeEach(() => {
-    accountsServiceMock = createMock<AccountsServiceImpl>();
-    accountsTransfersDaoMock = createMock<AccountsTransfersDaoImpl>();
+    getAccountsServiceMock = createMock<GetAccountsService>();
+    accountsTransfersDaoMock = createMock<IAccountsTransfersDao>();
     transfersValidationsMock = createMock<TransfersValidations>();
 
     transfersService = new TrasnfersServiceImpl(
-      accountsServiceMock,
+      getAccountsServiceMock,
       accountsTransfersDaoMock,
       transfersValidationsMock,
     );
@@ -46,7 +46,7 @@ describe('TransferService', () => {
 
   describe('transfer', () => {
     it('should perform a transfer succesfully', async () => {
-      accountsServiceMock.getByDocumentOrDie.mockResolvedValue(account);
+      getAccountsServiceMock.getByDocumentOrDie.mockResolvedValue(account);
 
       transfersValidationsMock.validateValue.mockReturnValueOnce(undefined);
 
@@ -62,14 +62,14 @@ describe('TransferService', () => {
         transferLog,
       );
 
-      expect(accountsServiceMock.getByDocumentOrDie).toBeCalledTimes(2);
+      expect(getAccountsServiceMock.getByDocumentOrDie).toBeCalledTimes(2);
       expect(transfersValidationsMock.validateValue).toBeCalledTimes(1);
       expect(
         transfersValidationsMock.validateDuplicatedTransfer,
       ).toBeCalledTimes(1);
       expect(accountsTransfersDaoMock.executeTransfer).toBeCalledTimes(1);
 
-      expect(accountsServiceMock.getByDocumentOrDie).toBeCalledWith(
+      expect(getAccountsServiceMock.getByDocumentOrDie).toBeCalledWith(
         account.document,
       );
       expect(transfersValidationsMock.validateValue).toBeCalledWith(
@@ -101,7 +101,7 @@ describe('TransferService', () => {
     });
 
     it('should throw a BadRequestException if sender or receiver documents are not registred', async () => {
-      accountsServiceMock.getByDocumentOrDie.mockRejectedValueOnce(
+      getAccountsServiceMock.getByDocumentOrDie.mockRejectedValueOnce(
         new BadRequestException(
           'Document not registred. Please check this information and try again',
         ),
@@ -113,11 +113,11 @@ describe('TransferService', () => {
         ),
       );
 
-      expect(accountsServiceMock.getByDocumentOrDie).toBeCalledWith(
+      expect(getAccountsServiceMock.getByDocumentOrDie).toBeCalledWith(
         account.document,
       );
 
-      expect(accountsServiceMock.getByDocumentOrDie).toBeCalledTimes(1);
+      expect(getAccountsServiceMock.getByDocumentOrDie).toBeCalledTimes(1);
       expect(transfersValidationsMock.validateValue).toBeCalledTimes(0);
       expect(
         transfersValidationsMock.validateDuplicatedTransfer,
@@ -126,7 +126,7 @@ describe('TransferService', () => {
     });
 
     it('should throw a BadRequestException if transfers value execeed sender account available value', async () => {
-      accountsServiceMock.getByDocumentOrDie.mockResolvedValueOnce(account);
+      getAccountsServiceMock.getByDocumentOrDie.mockResolvedValueOnce(account);
       transfersValidationsMock.validateValue.mockImplementationOnce(() => {
         throw new BadRequestException(
           'Insuficient account founds. Transference can not be concluded.',
@@ -139,11 +139,11 @@ describe('TransferService', () => {
         ),
       );
 
-      expect(accountsServiceMock.getByDocumentOrDie).toBeCalledWith(
+      expect(getAccountsServiceMock.getByDocumentOrDie).toBeCalledWith(
         account.document,
       );
 
-      expect(accountsServiceMock.getByDocumentOrDie).toBeCalledTimes(1);
+      expect(getAccountsServiceMock.getByDocumentOrDie).toBeCalledTimes(1);
       expect(
         transfersValidationsMock.validateDuplicatedTransfer,
       ).toBeCalledTimes(0);
@@ -151,7 +151,7 @@ describe('TransferService', () => {
     });
 
     it('should throw a BadRequestException if a transfer with the same sender, receiver and value was performed 2 minutes before', async () => {
-      accountsServiceMock.getByDocumentOrDie.mockResolvedValue(account);
+      getAccountsServiceMock.getByDocumentOrDie.mockResolvedValue(account);
       transfersValidationsMock.validateDuplicatedTransfer.mockRejectedValueOnce(
         new BadRequestException('Duplicated Transfers.'),
       );
@@ -160,26 +160,28 @@ describe('TransferService', () => {
         new BadRequestException('Duplicated Transfers.'),
       );
 
-      expect(accountsServiceMock.getByDocumentOrDie).toBeCalledTimes(1);
+      expect(getAccountsServiceMock.getByDocumentOrDie).toBeCalledTimes(1);
       expect(accountsTransfersDaoMock.executeTransfer).toBeCalledTimes(0);
 
-      expect(accountsServiceMock.getByDocumentOrDie).toBeCalledWith(
+      expect(getAccountsServiceMock.getByDocumentOrDie).toBeCalledWith(
         account.document,
       );
     });
 
     it('should fail if getByDocumentOrDie throws exception', async () => {
-      accountsServiceMock.getByDocumentOrDie.mockRejectedValueOnce(new Error());
+      getAccountsServiceMock.getByDocumentOrDie.mockRejectedValueOnce(
+        new Error(),
+      );
 
       expect(transfersService.transfer(transfersDto)).rejects.toThrow(
         new Error(),
       );
 
-      expect(accountsServiceMock.getByDocumentOrDie).toBeCalledWith(
+      expect(getAccountsServiceMock.getByDocumentOrDie).toBeCalledWith(
         account.document,
       );
 
-      expect(accountsServiceMock.getByDocumentOrDie).toBeCalledTimes(1);
+      expect(getAccountsServiceMock.getByDocumentOrDie).toBeCalledTimes(1);
       expect(transfersValidationsMock.validateValue).toBeCalledTimes(0);
       expect(
         transfersValidationsMock.validateDuplicatedTransfer,
@@ -188,7 +190,7 @@ describe('TransferService', () => {
     });
 
     it('should fail if validateDuplicatedTransfer throws exception', async () => {
-      accountsServiceMock.getByDocumentOrDie.mockResolvedValue(account);
+      getAccountsServiceMock.getByDocumentOrDie.mockResolvedValue(account);
       transfersValidationsMock.validateDuplicatedTransfer.mockRejectedValueOnce(
         new Error(),
       );
@@ -197,11 +199,11 @@ describe('TransferService', () => {
         new Error(),
       );
 
-      expect(accountsServiceMock.getByDocumentOrDie).toBeCalledWith(
+      expect(getAccountsServiceMock.getByDocumentOrDie).toBeCalledWith(
         account.document,
       );
 
-      expect(accountsServiceMock.getByDocumentOrDie).toBeCalledTimes(1);
+      expect(getAccountsServiceMock.getByDocumentOrDie).toBeCalledTimes(1);
       expect(transfersValidationsMock.validateValue).toBeCalledTimes(0);
       expect(
         transfersValidationsMock.validateDuplicatedTransfer,
@@ -210,7 +212,7 @@ describe('TransferService', () => {
     });
 
     it('should fail if executeTransfer throws exception', async () => {
-      accountsServiceMock.getByDocumentOrDie.mockResolvedValueOnce(account);
+      getAccountsServiceMock.getByDocumentOrDie.mockResolvedValueOnce(account);
       accountsTransfersDaoMock.executeTransfer.mockRejectedValueOnce(
         new Error(),
       );
@@ -219,7 +221,7 @@ describe('TransferService', () => {
         new Error(),
       );
 
-      expect(accountsServiceMock.getByDocumentOrDie).toBeCalledTimes(1);
+      expect(getAccountsServiceMock.getByDocumentOrDie).toBeCalledTimes(1);
     });
   });
 });

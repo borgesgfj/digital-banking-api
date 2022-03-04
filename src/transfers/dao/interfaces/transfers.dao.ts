@@ -1,4 +1,4 @@
-import { TransfersEntity } from '../entities/transfers.entity';
+import { TransfersEntity } from '../../entities/transfers.entity';
 
 export interface ITransfersDao {
   save(transferSave: TransfersEntity): Promise<void>;

@@ -1,14 +1,11 @@
 import * as request from 'supertest';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { AccountsServiceImpl } from '../src/accounts/accounts.service.impl';
-import { IAccountsDao } from 'src/accounts/interfaces/accounts.dao';
-import { IAccountsService } from '../src/accounts/interfaces/accounts.service';
+import { IAccountsDao } from 'src/accounts/dao/interfaces/accounts.dao';
 import { DITokens } from '../src/common/enums/DITokens';
 import { TransfersEntity } from '../src/transfers/entities/transfers.entity';
-import { ITransfersDao } from '../src/transfers/interfaces/transfers.dao';
+import { ITransfersDao } from '../src/transfers/dao/interfaces/transfers.dao';
 import { TransactionsHistoryController } from '../src/user-history/user-history.controller';
-import { HistoryService } from '../src/user-history/user-history.service';
 import { TransfersEntityBuilder } from '../src/utils/builders/transfers-entity-builders';
 import { HandleTime } from '../src/utils/handle-date';
 import { InMemoryAccountsDao } from './in-memory-dao/accounts-stub.dao';
@@ -16,24 +13,27 @@ import { InMemoryTransfersDao } from './in-memory-dao/transfers-stub.dao';
 import { CreateAccountDto } from '../src/accounts/dto/create-account.dto';
 import { AccountsBuilder } from '../src/utils/builders/accounts-builder';
 import { Accounts } from '../src/accounts/entities/account.entity';
+import { GetAccountsService } from '../src/accounts/service/interfaces/get-accounts.service';
+import { GetAccountsServiceImpl } from '../src/accounts/service/get-accounts.sevice.impl';
+import { HistoryServiceImpl } from '../src/user-history/service/user-history.service.impl';
 
 describe('TransactionsHistoryController (e2e)', () => {
   let app: INestApplication;
   let transfersDao: ITransfersDao;
-  let accountsService: IAccountsService;
+  let getAccountsService: GetAccountsService;
   let accountsDao: IAccountsDao;
 
   beforeEach(async () => {
     transfersDao = new InMemoryTransfersDao();
     accountsDao = new InMemoryAccountsDao();
-    accountsService = new AccountsServiceImpl(accountsDao);
+    getAccountsService = new GetAccountsServiceImpl(accountsDao);
 
     const moduleFixture: TestingModule = await Test.createTestingModule({
       controllers: [TransactionsHistoryController],
       providers: [
         { provide: DITokens.TransfersDao, useValue: transfersDao },
-        { provide: DITokens.AccountsService, useValue: accountsService },
-        HistoryService,
+        { provide: DITokens.GetAccountsService, useValue: getAccountsService },
+        { provide: DITokens.HistoryService, useClass: HistoryServiceImpl },
       ],
     }).compile();
 

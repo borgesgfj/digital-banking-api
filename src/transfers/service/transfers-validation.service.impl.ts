@@ -1,10 +1,11 @@
 import { BadRequestException, Inject, Injectable } from '@nestjs/common';
-import { DITokens } from '../common/enums/DITokens';
-import { HandleTime } from '../utils/handle-date';
-import { ITransfersDao } from './interfaces/transfers.dao';
+import { DITokens } from '../../common/enums/DITokens';
+import { HandleTime } from '../../utils/handle-date';
+import { TransfersValidations } from './interfaces/transfers-validations.service';
+import { ITransfersDao } from '../dao/interfaces/transfers.dao';
 
 @Injectable()
-export class TransfersValidations {
+export class TransfersValidationsImpl implements TransfersValidations {
   constructor(
     @Inject(DITokens.TransfersDao)
     private readonly transfersDao: ITransfersDao,

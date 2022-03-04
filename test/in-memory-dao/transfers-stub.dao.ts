@@ -1,5 +1,5 @@
-import { TransfersEntity } from 'src/transfers/entities/transfers.entity';
-import { ITransfersDao } from 'src/transfers/interfaces/transfers.dao';
+import { ITransfersDao } from 'src/transfers/dao/interfaces/transfers.dao';
+import { TransfersEntity } from '../../src/transfers/entities/transfers.entity';
 
 export class InMemoryTransfersDao implements ITransfersDao {
   private readonly transfersHistory: TransfersEntity[] = [];

@@ -3,11 +3,11 @@ import { BadRequestException } from '@nestjs/common';
 import { TransfersEntityBuilder } from '../utils/builders/transfers-entity-builders';
 import { HandleTime } from '../utils/handle-date';
 import { TransactionsHistoryController } from './user-history.controller';
-import { HistoryService } from './user-history.service';
+import { HistoryServiceImpl } from './service/user-history.service.impl';
 
 describe('TransactionsHistoryController', () => {
   let historyController: TransactionsHistoryController;
-  let historyServiceMock: DeepMocked<HistoryService>;
+  let historyServiceMock: DeepMocked<HistoryServiceImpl>;
 
   const transfer = TransfersEntityBuilder.buildTransfers(
     1,
@@ -15,7 +15,7 @@ describe('TransactionsHistoryController', () => {
   );
 
   beforeEach(() => {
-    historyServiceMock = createMock<HistoryService>();
+    historyServiceMock = createMock<HistoryServiceImpl>();
     historyController = new TransactionsHistoryController(historyServiceMock);
   });
 

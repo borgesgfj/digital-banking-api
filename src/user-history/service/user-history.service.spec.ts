@@ -1,17 +1,17 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { HandleTime } from '../utils/handle-date';
-import { AccountsServiceImpl } from '../accounts/accounts.service.impl';
-import { TransfersDaoImpl } from '../transfers/transfers.dao.impl';
-import { TransfersEntityBuilder } from '../utils/builders/transfers-entity-builders';
-import { HistoryService } from './user-history.service';
-import { Accounts } from '../accounts/entities/account.entity';
-import { AccountsBuilder } from '../utils/builders/accounts-builder';
+import { HandleTime } from '../../utils/handle-date';
+import { TransfersEntityBuilder } from '../../utils/builders/transfers-entity-builders';
+import { Accounts } from '../../accounts/entities/account.entity';
+import { AccountsBuilder } from '../../utils/builders/accounts-builder';
 import { BadRequestException } from '@nestjs/common';
+import { GetAccountsService } from '../../accounts/service/interfaces/get-accounts.service';
+import { ITransfersDao } from '../../transfers/dao/interfaces/transfers.dao';
+import { HistoryServiceImpl } from './user-history.service.impl';
 
 describe('HistoryService', () => {
-  let historyService: HistoryService;
-  let accountsServiceMock: DeepMocked<AccountsServiceImpl>;
-  let transfersDaoMock: DeepMocked<TransfersDaoImpl>;
+  let historyService: HistoryServiceImpl;
+  let getAccountsServiceMock: DeepMocked<GetAccountsService>;
+  let transfersDaoMock: DeepMocked<ITransfersDao>;
 
   const transfer = TransfersEntityBuilder.buildTransfers(
     1,
@@ -24,23 +24,26 @@ describe('HistoryService', () => {
   );
 
   beforeEach(() => {
-    accountsServiceMock = createMock<AccountsServiceImpl>();
-    transfersDaoMock = createMock<TransfersDaoImpl>();
-    historyService = new HistoryService(accountsServiceMock, transfersDaoMock);
+    getAccountsServiceMock = createMock<GetAccountsService>();
+    transfersDaoMock = createMock<ITransfersDao>();
+    historyService = new HistoryServiceImpl(
+      getAccountsServiceMock,
+      transfersDaoMock,
+    );
   });
 
   describe('getHistory', () => {
     it('should return a transaction history succesfully', async () => {
-      accountsServiceMock.getByDocumentOrDie.mockResolvedValueOnce(account);
+      getAccountsServiceMock.getByDocumentOrDie.mockResolvedValueOnce(account);
       transfersDaoMock.getTransactionsHistory.mockResolvedValueOnce([transfer]);
 
       expect(await historyService.getHistory('865.615.970-44')).toEqual([
         transfer,
       ]);
 
-      expect(accountsServiceMock.getByDocumentOrDie).toBeCalledTimes(1);
+      expect(getAccountsServiceMock.getByDocumentOrDie).toBeCalledTimes(1);
       expect(transfersDaoMock.getTransactionsHistory).toBeCalledTimes(1);
-      expect(accountsServiceMock.getByDocumentOrDie).toBeCalledWith(
+      expect(getAccountsServiceMock.getByDocumentOrDie).toBeCalledWith(
         '865.615.970-44',
       );
       expect(transfersDaoMock.getTransactionsHistory).toBeCalledWith(
@@ -49,7 +52,7 @@ describe('HistoryService', () => {
     });
 
     it('should throw a BadRequestException if document is not registred', async () => {
-      accountsServiceMock.getByDocumentOrDie.mockRejectedValueOnce(
+      getAccountsServiceMock.getByDocumentOrDie.mockRejectedValueOnce(
         new BadRequestException(
           'Document not registred. Please check this information and try again',
         ),
@@ -61,27 +64,29 @@ describe('HistoryService', () => {
         ),
       );
 
-      expect(accountsServiceMock.getByDocumentOrDie).toBeCalledTimes(1);
-      expect(accountsServiceMock.getByDocumentOrDie).toBeCalledWith(
+      expect(getAccountsServiceMock.getByDocumentOrDie).toBeCalledTimes(1);
+      expect(getAccountsServiceMock.getByDocumentOrDie).toBeCalledWith(
         '865.615.970-49',
       );
     });
 
     it('should fail if getByDocumentOrDie throws error', async () => {
-      accountsServiceMock.getByDocumentOrDie.mockRejectedValueOnce(new Error());
+      getAccountsServiceMock.getByDocumentOrDie.mockRejectedValueOnce(
+        new Error(),
+      );
 
       expect(historyService.getHistory('865.615.970-44')).rejects.toThrow(
         new Error(),
       );
 
-      expect(accountsServiceMock.getByDocumentOrDie).toBeCalledTimes(1);
-      expect(accountsServiceMock.getByDocumentOrDie).toBeCalledWith(
+      expect(getAccountsServiceMock.getByDocumentOrDie).toBeCalledTimes(1);
+      expect(getAccountsServiceMock.getByDocumentOrDie).toBeCalledWith(
         '865.615.970-44',
       );
     });
 
     it('should fail if getTransactionsHistory throws error', async () => {
-      accountsServiceMock.getByDocumentOrDie.mockResolvedValueOnce(account);
+      getAccountsServiceMock.getByDocumentOrDie.mockResolvedValueOnce(account);
       transfersDaoMock.getTransactionsHistory.mockRejectedValueOnce(
         new Error(),
       );
@@ -90,9 +95,9 @@ describe('HistoryService', () => {
         new Error(),
       );
 
-      expect(accountsServiceMock.getByDocumentOrDie).toBeCalledTimes(1);
+      expect(getAccountsServiceMock.getByDocumentOrDie).toBeCalledTimes(1);
       expect(transfersDaoMock.getTransactionsHistory).toBeCalledTimes(0);
-      expect(accountsServiceMock.getByDocumentOrDie).toBeCalledWith(
+      expect(getAccountsServiceMock.getByDocumentOrDie).toBeCalledWith(
         '865.615.970-44',
       );
     });

@@ -5,6 +5,9 @@ export enum DITokens {
   AccountsTransfersDao = 'ACCOUNTS_TRANSFERS_DAO',
 
   // SERVICES
-  AccountsService = 'ACCOUNTS_SERVICE',
   TrasnfersService = 'TRANSFERS_SERVICE',
+  TransfersValidations = 'TRANSFERS_VALIDATIONS',
+  GetAccountsService = 'GET_ACCOUNTS_SERVICE',
+  CreateAccountsService = 'CREATE_ACCOUNTS_SERVICE',
+  HistoryService = 'HISTORY_SERVICE',
 }

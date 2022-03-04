@@ -1,5 +1,5 @@
 import { Accounts } from 'src/accounts/entities/account.entity';
-import { TransferLog } from './transfer-log.interface';
+import { TransferLog } from '../../interfaces/transfer-log.interface';
 
 export interface IAccountsTransfersDao {
   executeTransfer(

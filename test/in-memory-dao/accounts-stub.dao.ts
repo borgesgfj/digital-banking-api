@@ -1,4 +1,4 @@
-import { IAccountsDao } from 'src/accounts/interfaces/accounts.dao';
+import { IAccountsDao } from 'src/accounts/dao/interfaces/accounts.dao';
 import { Accounts } from '../../src/accounts/entities/account.entity';
 
 export class InMemoryAccountsDao implements IAccountsDao {

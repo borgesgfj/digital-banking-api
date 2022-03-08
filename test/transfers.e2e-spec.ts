@@ -2,35 +2,34 @@ import * as request from 'supertest';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { DITokens } from '../src/common/enums/DITokens';
-import { AccountsTransfersDaoImpl } from '../src/transfers/accounts-transfers.dao.impl';
-import { ITransfersDao } from '../src/transfers/interfaces/transfers.dao';
+import { ITransfersDao } from '../src/transfers/dao/interfaces/transfers.dao';
 import { TransfersController } from '../src/transfers/transfers.controller';
-import { TrasnfersServiceImpl } from '../src/transfers/transfers.service.impl';
+import { TrasnfersServiceImpl } from '../src/transfers/service/transfers.service.impl';
 import { InMemoryTransfersDao } from './in-memory-dao/transfers-stub.dao';
 import { Accounts } from '../src/accounts/entities/account.entity';
 import { AccountsBuilder } from '../src/utils/builders/accounts-builder';
 import { TransferOperationDto } from '../src/transfers/dto/transfers.dto';
 import { TransfersEntityBuilder } from '../src/utils/builders/transfers-entity-builders';
-import { IAccountsDao } from '../src/accounts/interfaces/accounts.dao';
+import { IAccountsDao } from '../src/accounts/dao/interfaces/accounts.dao';
 import { InMemoryAccountsDao } from './in-memory-dao/accounts-stub.dao';
 import { CreateAccountDto } from '../src/accounts/dto/create-account.dto';
 import { TransferLog } from '../src/transfers/interfaces/transfer-log.interface';
 import { TransferLogBuilder } from '../src/utils/builders/transfers-log-builder';
-import { TransfersValidations } from '../src/transfers/transfers-validation';
-import { HandleTime } from '../src/utils/handle-date';
-import { AccountsServiceImpl } from '../src/accounts/accounts.service.impl';
-import { IAccountsService } from '../src/accounts/interfaces/accounts.service';
+import { TransfersValidationsImpl } from '../src/transfers/service/transfers-validation.service.impl';
+import { GetAccountsService } from '../src/accounts/service/interfaces/get-accounts.service';
+import { GetAccountsServiceImpl } from '../src/accounts/service/get-accounts.sevice.impl';
+import { AccountsTransfersDaoImpl } from '../src/transfers/dao/accounts-transfers.dao.impl';
 
 describe('TransfersController (e2e)', () => {
   let app: INestApplication;
   let transfersDao: ITransfersDao;
   let accountsDao: IAccountsDao;
-  let accountsService: IAccountsService;
+  let getAccountsService: GetAccountsService;
 
   beforeEach(async () => {
     transfersDao = new InMemoryTransfersDao();
     accountsDao = new InMemoryAccountsDao();
-    accountsService = new AccountsServiceImpl(accountsDao);
+    getAccountsService = new GetAccountsServiceImpl(accountsDao);
     const moduleFixture: TestingModule = await Test.createTestingModule({
       controllers: [TransfersController],
       providers: [
@@ -41,9 +40,11 @@ describe('TransfersController (e2e)', () => {
         },
         { provide: DITokens.TransfersDao, useValue: transfersDao },
         { provide: DITokens.AccountsDao, useValue: accountsDao },
-        { provide: DITokens.AccountsService, useValue: accountsService },
-        TransfersValidations,
-        HandleTime,
+        { provide: DITokens.GetAccountsService, useValue: getAccountsService },
+        {
+          provide: DITokens.TransfersValidations,
+          useClass: TransfersValidationsImpl,
+        },
       ],
     }).compile();
 

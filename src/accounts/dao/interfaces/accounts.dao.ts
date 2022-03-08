@@ -1,4 +1,4 @@
-import { Accounts } from '../entities/account.entity';
+import { Accounts } from '../../entities/account.entity';
 
 export interface IAccountsDao {
   getByDocument(doc: string): Promise<Accounts>;

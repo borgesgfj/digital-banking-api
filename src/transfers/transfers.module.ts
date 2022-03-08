@@ -1,14 +1,13 @@
 import { Module } from '@nestjs/common';
 import { AccountsModule } from '../accounts/accounts.module';
-import { TrasnfersServiceImpl } from './transfers.service.impl';
+import { TrasnfersServiceImpl } from './service/transfers.service.impl';
 import { TransfersController } from './transfers.controller';
-import { AccountsTransfersDaoImpl } from './accounts-transfers.dao.impl';
-import { TransfersDaoImpl } from './transfers.dao.impl';
-import { TransfersValidations } from './transfers-validation';
-import { HandleTime } from '../utils/handle-date';
+import { TransfersValidationsImpl } from './service/transfers-validation.service.impl';
 import { TransfersEntity } from './entities/transfers.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DITokens } from '../common/enums/DITokens';
+import { TransfersDaoImpl } from './dao/transfers.dao.impl';
+import { AccountsTransfersDaoImpl } from './dao/accounts-transfers.dao.impl';
 
 @Module({
   imports: [AccountsModule, TypeOrmModule.forFeature([TransfersEntity])],
@@ -20,8 +19,10 @@ import { DITokens } from '../common/enums/DITokens';
       useClass: AccountsTransfersDaoImpl,
     },
     { provide: DITokens.TransfersDao, useClass: TransfersDaoImpl },
-    TransfersValidations,
-    HandleTime,
+    {
+      provide: DITokens.TransfersValidations,
+      useClass: TransfersValidationsImpl,
+    },
   ],
   exports: [{ provide: DITokens.TransfersDao, useClass: TransfersDaoImpl }],
 })

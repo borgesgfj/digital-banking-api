@@ -2,13 +2,14 @@ import * as request from 'supertest';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AccountsController } from '../src/accounts/accounts.controller';
-import { AccountsServiceImpl } from '../src/accounts/accounts.service.impl';
 import { CreateAccountDto } from '../src/accounts/dto/create-account.dto';
 import { Accounts } from '../src/accounts/entities/account.entity';
-import { IAccountsDao } from '../src/accounts/interfaces/accounts.dao';
+import { IAccountsDao } from '../src/accounts/dao/interfaces/accounts.dao';
 import { DITokens } from '../src/common/enums/DITokens';
 import { InMemoryAccountsDao } from './in-memory-dao/accounts-stub.dao';
 import { AccountsBuilder } from '../src/utils/builders/accounts-builder';
+import { GetAccountsServiceImpl } from '../src/accounts/service/get-accounts.sevice.impl';
+import { CreateAccountsServiceImpl } from '../src/accounts/service/create-accounts.service.impl';
 
 describe('AccountsController (e2e)', () => {
   let app: INestApplication;
@@ -19,7 +20,14 @@ describe('AccountsController (e2e)', () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       controllers: [AccountsController],
       providers: [
-        { provide: DITokens.AccountsService, useClass: AccountsServiceImpl },
+        {
+          provide: DITokens.GetAccountsService,
+          useClass: GetAccountsServiceImpl,
+        },
+        {
+          provide: DITokens.CreateAccountsService,
+          useClass: CreateAccountsServiceImpl,
+        },
         { provide: DITokens.AccountsDao, useValue: accountsDao },
       ],
     }).compile();
